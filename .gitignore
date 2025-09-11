@@ -1,0 +1,3 @@
+*.pyc
+/functions/__pycache__
+/readme_img/
