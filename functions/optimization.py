@@ -1,8 +1,8 @@
-# version 0.6.0 by romangorbunov91
+# version 0.7.0 by romangorbunov91
 # 12-Sep-2025
 import numpy as np
 
-def momentum_descent(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
+def momentum(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
     iteration_max = 10000000
@@ -12,13 +12,12 @@ def momentum_descent(grad_func, x_init, learning_rate, beta, tolerance, printout
     x = x_init.copy()
     trajectory = []
     trajectory.append(x.copy())
-    p_prev = 0
+    p = 0
     for i in range(iteration_max):
         grad = grad_func(x)
         grad_counter += 1
-        p = beta * p_prev + (1-beta) * learning_rate * grad
+        p = beta * p + (1-beta) * learning_rate * grad
         x -= p
-        p_prev = p.copy()
         trajectory.append(x.copy())
         
         grad_norm = np.linalg.norm(grad, ord=None, axis=None)
@@ -33,10 +32,9 @@ def momentum_descent(grad_func, x_init, learning_rate, beta, tolerance, printout
         print('Iteration:', i)
         print('x-values:', np.round(x,4))
         print('Gradient norm:', np.round(grad_norm,4))
-    # always func_counter = 0
-    return x, trajectory, i+1, 0, grad_counter
+    return x, trajectory, i+1, grad_counter
 
-def nesterov_descent(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
+def nesterov(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
     iteration_max = 10000000
@@ -46,13 +44,12 @@ def nesterov_descent(grad_func, x_init, learning_rate, beta, tolerance, printout
     x = x_init.copy()
     trajectory = []
     trajectory.append(x.copy())
-    p_prev = 0
+    p = 0
     for i in range(iteration_max):
         grad = grad_func(x)
         grad_counter += 1
-        p = beta * p_prev + (1-beta) * learning_rate * grad_func(x - learning_rate*grad)
+        p = beta * p + (1-beta) * learning_rate * grad_func(x - learning_rate*grad)
         x -= p
-        p_prev = p.copy()
         trajectory.append(x.copy())
         
         grad_norm = np.linalg.norm(grad, ord=None, axis=None)
@@ -67,15 +64,12 @@ def nesterov_descent(grad_func, x_init, learning_rate, beta, tolerance, printout
         print('Iteration:', i)
         print('x-values:', np.round(x,4))
         print('Gradient norm:', np.round(grad_norm,4))
-    # always func_counter = 0
-    return x, trajectory, i+1, 0, grad_counter
+    return x, trajectory, i+1, grad_counter
 
-def adagrad_descent(grad_func, x_init, learning_rate, tolerance, printoutput):
+def adagrad(grad_func, x_init, learning_rate, eps_zero, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
     iteration_max = 10000000
-    
-    eps_zero = 1e-6
     
     grad_counter = 0
     
@@ -107,15 +101,12 @@ def adagrad_descent(grad_func, x_init, learning_rate, tolerance, printoutput):
         print('Iteration:', i)
         print('x-values:', np.round(x,4))
         print('Gradient norm:', np.round(grad_norm,4))
-    # always func_counter = 0
-    return x, trajectory, i+1, 0, grad_counter
+    return x, trajectory, i+1, grad_counter
 
-def rmsprop_descent(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
+def rmsprop(grad_func, x_init, learning_rate, beta, eps_zero, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
     iteration_max = 10000000
-    
-    eps_zero = 1e-6
     
     grad_counter = 0
     
@@ -145,13 +136,12 @@ def rmsprop_descent(grad_func, x_init, learning_rate, beta, tolerance, printoutp
         print('Iteration:', i)
         print('x-values:', np.round(x,4))
         print('Gradient norm:', np.round(grad_norm,4))
-    # always func_counter = 0
-    return x, trajectory, i+1, 0, grad_counter
+    return x, trajectory, i+1, grad_counter
 
-def adadelta_descent(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
+def adadelta(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
-    iteration_max = 10000000
+    iteration_max = int(1e9)
     
     grad_counter = 0
     
@@ -182,6 +172,7 @@ def adadelta_descent(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
         grad_norm = np.linalg.norm(grad, ord=None, axis=None)
 
         if (grad_norm < tolerance):
+            print('Gradient norm:', np.round(grad_norm,4))
             if printoutput:
                 print('Iteration:', i)
                 print('x-values:', np.round(x,4))
@@ -191,8 +182,50 @@ def adadelta_descent(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
         print('Iteration:', i)
         print('x-values:', np.round(x,4))
         print('Gradient norm:', np.round(grad_norm,4))
-    # always func_counter = 0
-    return x, trajectory, i+1, 0, grad_counter
+    return x, trajectory, i+1, grad_counter
+
+def adam(grad_func, x_init, learning_rate, beta1, beta2, eps_zero, tolerance, printoutput):
+    # 'x_init' must be np.array([val1, val2]).
+    # 'printoutput' is BOOL.
+    iteration_max = 10000000
+    
+    grad_counter = 0
+    
+    x = x_init.copy()
+    
+    trajectory = []
+    trajectory.append(x.copy())
+    m = np.array([0.0]*len(x_init))
+    v = np.array([0.0]*len(x_init))
+    
+    for i in range(iteration_max):
+        # Compute Gradient.
+        grad = grad_func(x)
+        grad_counter += 1
+        
+        for idx, grad_coord in enumerate(grad):
+            # Update biased first moment estimate.
+            m[idx] = beta1 * m[idx] + (1-beta1) * grad_coord
+            # Update biased second raw moment estimate.
+            v[idx] = beta2 * v[idx] + (1-beta2) * grad_coord**2
+            # Apply Update.
+            x[idx] -= learning_rate * m[idx]/(1 - beta1**(i+1)) / (np.sqrt(v[idx]/(1 - beta2**(i+1)) + eps_zero))
+        
+        trajectory.append(x.copy())
+        
+        grad_norm = np.linalg.norm(grad, ord=None, axis=None)
+
+        if (grad_norm < tolerance):
+            if printoutput:
+                print('Iteration:', i)
+                print('x-values:', np.round(x,4))
+                print('Gradient norm:', np.round(grad_norm,4))
+            break
+    if printoutput:
+        print('Iteration:', i)
+        print('x-values:', np.round(x,4))
+        print('Gradient norm:', np.round(grad_norm,4))
+    return x, trajectory, i+1, grad_counter
 
 # Метод сопряженных градиентов.
 def conjugate_grad_descent(A, b, x_init, tolerance, printoutput):
@@ -230,6 +263,5 @@ def conjugate_grad_descent(A, b, x_init, tolerance, printoutput):
         print('Iteration:', i)
         print('x-values:', np.round(x,4))
         print('Gradient norm:', np.round(p_norm,4))
-    func_counter = 0
     grad_counter = 0
-    return x, trajectory, i+1, func_counter, grad_counter
+    return x, trajectory, i+1, grad_counter
