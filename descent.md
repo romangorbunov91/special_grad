@@ -1,5 +1,6 @@
-﻿# Градиентный спуск с дроблением шага по условию Армихо
-Расчеты представлены в [armijo_step_descent.ipynb](armijo_step_descent.ipynb).
+﻿# Зависимости от выбранной точности
+Расчеты представлены в [descent.ipynb](descent.ipynb).
+Метод AdaDelta реализован по [Matthew D. Zeiler. ADADELTA: An Adaptive Learning Rate Method. 2012](https://arxiv.org/abs/1212.5701)
 
 ## Критерий останова
 

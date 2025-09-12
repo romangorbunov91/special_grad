@@ -1,5 +1,5 @@
-# version 0.0.1 by romangorbunov91
-# 11-Sep-2025
+# version 0.6.0 by romangorbunov91
+# 12-Sep-2025
 import numpy as np
 
 def momentum_descent(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
@@ -123,16 +123,60 @@ def rmsprop_descent(grad_func, x_init, learning_rate, beta, tolerance, printoutp
     trajectory = []
     trajectory.append(x.copy())
     G = np.array([0.0]*len(x_init))
-    G_prev = G.copy()
     for i in range(iteration_max):
         grad = grad_func(x)
         grad_counter += 1
         
         for idx, grad_coord in enumerate(grad):
-            G[idx] = beta * G_prev[idx] + (1-beta) * grad_coord**2
+            G[idx] = beta * G[idx] + (1-beta) * grad_coord**2
             x[idx] -= learning_rate / np.sqrt(G[idx] + eps_zero) * grad_coord
         
-        G_prev = G.copy()
+        trajectory.append(x.copy())
+        
+        grad_norm = np.linalg.norm(grad, ord=None, axis=None)
+
+        if (grad_norm < tolerance):
+            if printoutput:
+                print('Iteration:', i)
+                print('x-values:', np.round(x,4))
+                print('Gradient norm:', np.round(grad_norm,4))
+            break
+    if printoutput:
+        print('Iteration:', i)
+        print('x-values:', np.round(x,4))
+        print('Gradient norm:', np.round(grad_norm,4))
+    # always func_counter = 0
+    return x, trajectory, i+1, 0, grad_counter
+
+def adadelta_descent(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
+    # 'x_init' must be np.array([val1, val2]).
+    # 'printoutput' is BOOL.
+    iteration_max = 10000000
+    
+    grad_counter = 0
+    
+    x = x_init.copy()
+    
+    trajectory = []
+    trajectory.append(x.copy())
+    G = np.array([0.0]*len(x_init))
+    H = np.array([0.0]*len(x_init))
+    
+    for i in range(iteration_max):
+        # Compute Gradient.
+        grad = grad_func(x)
+        grad_counter += 1
+        
+        for idx, grad_coord in enumerate(grad):
+            # Accumulate Gradient.
+            G[idx] = beta * G[idx] + (1-beta) * grad_coord**2
+            # Compute Update.
+            d_x = - np.sqrt((H[idx] + eps_zero) / (G[idx] + eps_zero)) * grad_coord
+            # Accumulate Updates.
+            H[idx] = beta * H[idx] + (1-beta) * d_x**2
+            # Apply Update.
+            x[idx] += d_x
+        
         trajectory.append(x.copy())
         
         grad_norm = np.linalg.norm(grad, ord=None, axis=None)
