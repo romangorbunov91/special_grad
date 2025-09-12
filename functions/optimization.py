@@ -82,7 +82,7 @@ def adagrad_descent(grad_func, x_init, learning_rate, tolerance, printoutput):
     x = x_init.copy()
     trajectory = []
     trajectory.append(x.copy())
-    G = np.zeros_like(x_init)
+    G = np.array([0.0]*len(x_init))
     G_prev = G.copy()
     for i in range(iteration_max):
         grad = grad_func(x)
@@ -90,6 +90,46 @@ def adagrad_descent(grad_func, x_init, learning_rate, tolerance, printoutput):
         
         for idx, grad_coord in enumerate(grad):
             G[idx] = G_prev[idx] + grad_coord**2
+            x[idx] -= learning_rate / np.sqrt(G[idx] + eps_zero) * grad_coord
+        
+        G_prev = G.copy()
+        trajectory.append(x.copy())
+        
+        grad_norm = np.linalg.norm(grad, ord=None, axis=None)
+
+        if (grad_norm < tolerance):
+            if printoutput:
+                print('Iteration:', i)
+                print('x-values:', np.round(x,4))
+                print('Gradient norm:', np.round(grad_norm,4))
+            break
+    if printoutput:
+        print('Iteration:', i)
+        print('x-values:', np.round(x,4))
+        print('Gradient norm:', np.round(grad_norm,4))
+    # always func_counter = 0
+    return x, trajectory, i+1, 0, grad_counter
+
+def rmsprop_descent(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
+    # 'x_init' must be np.array([val1, val2]).
+    # 'printoutput' is BOOL.
+    iteration_max = 10000000
+    
+    eps_zero = 1e-6
+    
+    grad_counter = 0
+    
+    x = x_init.copy()
+    trajectory = []
+    trajectory.append(x.copy())
+    G = np.array([0.0]*len(x_init))
+    G_prev = G.copy()
+    for i in range(iteration_max):
+        grad = grad_func(x)
+        grad_counter += 1
+        
+        for idx, grad_coord in enumerate(grad):
+            G[idx] = beta * G_prev[idx] + (1-beta) * grad_coord**2
             x[idx] -= learning_rate / np.sqrt(G[idx] + eps_zero) * grad_coord
         
         G_prev = G.copy()
