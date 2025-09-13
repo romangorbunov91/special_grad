@@ -1,11 +1,11 @@
-# version 0.7.0 by romangorbunov91
-# 12-Sep-2025
+# version 0.7.1 by romangorbunov91
+# 13-Sep-2025
 import numpy as np
 
 def momentum(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
-    iteration_max = 10000000
+    iteration_max = int(1e7)
     
     grad_counter = 0
     
@@ -37,8 +37,8 @@ def momentum(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
 def nesterov(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
-    iteration_max = 10000000
-    
+    iteration_max = int(1e7)
+
     grad_counter = 0
     
     x = x_init.copy()
@@ -69,7 +69,7 @@ def nesterov(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
 def adagrad(grad_func, x_init, learning_rate, eps_zero, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
-    iteration_max = 10000000
+    iteration_max = int(1e7)
     
     grad_counter = 0
     
@@ -106,7 +106,7 @@ def adagrad(grad_func, x_init, learning_rate, eps_zero, tolerance, printoutput):
 def rmsprop(grad_func, x_init, learning_rate, beta, eps_zero, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
-    iteration_max = 10000000
+    iteration_max = int(1e7)
     
     grad_counter = 0
     
@@ -141,7 +141,7 @@ def rmsprop(grad_func, x_init, learning_rate, beta, eps_zero, tolerance, printou
 def adadelta(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
-    iteration_max = int(1e9)
+    iteration_max = int(1e7)
     
     grad_counter = 0
     
@@ -161,7 +161,7 @@ def adadelta(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
             # Accumulate Gradient.
             G[idx] = beta * G[idx] + (1-beta) * grad_coord**2
             # Compute Update.
-            d_x = - np.sqrt((H[idx] + eps_zero) / (G[idx] + eps_zero)) * grad_coord
+            d_x = - np.sqrt((H[idx] + 1e-10) / (G[idx] + eps_zero)) * grad_coord
             # Accumulate Updates.
             H[idx] = beta * H[idx] + (1-beta) * d_x**2
             # Apply Update.
@@ -172,7 +172,6 @@ def adadelta(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
         grad_norm = np.linalg.norm(grad, ord=None, axis=None)
 
         if (grad_norm < tolerance):
-            print('Gradient norm:', np.round(grad_norm,4))
             if printoutput:
                 print('Iteration:', i)
                 print('x-values:', np.round(x,4))
@@ -187,7 +186,7 @@ def adadelta(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
 def adam(grad_func, x_init, learning_rate, beta1, beta2, eps_zero, tolerance, printoutput):
     # 'x_init' must be np.array([val1, val2]).
     # 'printoutput' is BOOL.
-    iteration_max = 10000000
+    iteration_max = int(1e7)
     
     grad_counter = 0
     
