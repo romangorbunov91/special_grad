@@ -1,5 +1,5 @@
-# version 0.7.1 by romangorbunov91
-# 13-Sep-2025
+# version 1.0.01 by romangorbunov91
+# 18-Sep-2025
 import numpy as np
 
 def momentum(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
@@ -47,8 +47,8 @@ def nesterov(grad_func, x_init, learning_rate, beta, tolerance, printoutput):
     p = 0
     for i in range(iteration_max):
         grad = grad_func(x)
-        grad_counter += 1
         p = beta * p + (1-beta) * learning_rate * grad_func(x - learning_rate*grad)
+        grad_counter += 2
         x -= p
         trajectory.append(x.copy())
         
@@ -77,16 +77,14 @@ def adagrad(grad_func, x_init, learning_rate, eps_zero, tolerance, printoutput):
     trajectory = []
     trajectory.append(x.copy())
     G = np.array([0.0]*len(x_init))
-    G_prev = G.copy()
     for i in range(iteration_max):
         grad = grad_func(x)
         grad_counter += 1
         
         for idx, grad_coord in enumerate(grad):
-            G[idx] = G_prev[idx] + grad_coord**2
+            G[idx] += grad_coord**2
             x[idx] -= learning_rate / np.sqrt(G[idx] + eps_zero) * grad_coord
         
-        G_prev = G.copy()
         trajectory.append(x.copy())
         
         grad_norm = np.linalg.norm(grad, ord=None, axis=None)
@@ -146,12 +144,10 @@ def adadelta(grad_func, x_init, beta, eps_zero, tolerance, printoutput):
     grad_counter = 0
     
     x = x_init.copy()
-    
     trajectory = []
     trajectory.append(x.copy())
     G = np.array([0.0]*len(x_init))
     H = np.array([0.0]*len(x_init))
-    
     for i in range(iteration_max):
         # Compute Gradient.
         grad = grad_func(x)
@@ -191,12 +187,10 @@ def adam(grad_func, x_init, learning_rate, beta1, beta2, eps_zero, tolerance, pr
     grad_counter = 0
     
     x = x_init.copy()
-    
     trajectory = []
     trajectory.append(x.copy())
-    m = np.array([0.0]*len(x_init))
-    v = np.array([0.0]*len(x_init))
-    
+    m = 0
+    v = 0
     for i in range(iteration_max):
         # Compute Gradient.
         grad = grad_func(x)
@@ -204,11 +198,11 @@ def adam(grad_func, x_init, learning_rate, beta1, beta2, eps_zero, tolerance, pr
         
         for idx, grad_coord in enumerate(grad):
             # Update biased first moment estimate.
-            m[idx] = beta1 * m[idx] + (1-beta1) * grad_coord
+            m = beta1 * m + (1-beta1) * grad_coord
             # Update biased second raw moment estimate.
-            v[idx] = beta2 * v[idx] + (1-beta2) * grad_coord**2
+            v = beta2 * v + (1-beta2) * grad_coord**2
             # Apply Update.
-            x[idx] -= learning_rate * m[idx]/(1 - beta1**(i+1)) / (np.sqrt(v[idx]/(1 - beta2**(i+1)) + eps_zero))
+            x[idx] -= learning_rate * m/(1 - beta1**(i+1)) / (np.sqrt(v/(1 - beta2**(i+1)) + eps_zero))
         
         trajectory.append(x.copy())
         

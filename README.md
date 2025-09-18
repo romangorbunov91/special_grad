@@ -20,7 +20,7 @@ $$\begin{equation}
     f(x_1, x_2) = (1 - x_1)^2 + 100 (x_2 - x_1^2)^2.
 \end{equation}$$
 
-Функции и их градиенты заданы в [functions_under_study.py](Functions/functions_under_study.py).
+Функции и их градиенты заданы в [functions_under_study.py](functions/functions_under_study.py).
 
 Графики функций построены в [plots.ipynb](plots.ipynb).
 
@@ -73,3 +73,7 @@ $$\begin{equation}
 Минимум функции имеет место при ${(x_1, x_2)=(a, a^2)}$, причем ${f(a, a^2) = 0}$.
 
 В большинстве случаев принимают ${a = 1}$, ${b = 100}$. Тогда минимум функции расположен в точке ${(1, 1)}$.
+
+## Reference
+1. [Matthew D. Zeiler. ADADELTA: An Adaptive Learning Rate Method, 2012](https://arxiv.org/abs/1212.5701)
+1. [Adam: A Method for Stochastic Optimization, 2014](https://arxiv.org/abs/1412.6980)
