@@ -34,10 +34,6 @@ $$\begin{equation}
 
 ## Приложение с таблицами
 
-
-
-
-
 <!-- START_ADAM --> 
 ### adam: Количество итераций ($\epsilon$=1e-05)
 |   µ |   order=2 |   order=3 |   order=4 |   order=5 |   order=6 |   order=7 |   order=8 |   order=9 |   order=10 |   order=11 |
@@ -53,7 +49,6 @@ $$\begin{equation}
 |  17 |      1560 |      1554 |      1995 |      8542 |      8918 |      3124 |      3651 |      8594 |       5575 |       4182 |
 |  19 |      1845 |     14482 |       950 |      6261 |     11848 |      7622 |      2552 |      9710 |       5844 |       7474 |
 <!-- END_ADAM -->
-
 <!-- START_ADAGRAD --> 
 ### adagrad: Количество итераций ($\epsilon$=1e-05)
 |   µ |   order=2 |   order=3 |   order=4 |   order=5 |   order=6 |   order=7 |   order=8 |   order=9 |   order=10 |   order=11 |
